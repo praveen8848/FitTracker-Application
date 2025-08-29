@@ -9,7 +9,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="eureka" />
       </profile>
-      <profile name="Annotation profile for userservice" enabled="true">
+      <profile name="Annotation profile for aiservice" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
