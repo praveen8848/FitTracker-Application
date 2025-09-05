@@ -1,0 +1,47 @@
+spring:
+  application:
+    name: gatewayservice
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+            jwk-set-uri: http://localhost:8181/realms/fitness-app/protocol/openid-connect/certs
+
+  cloud:
+    config:
+      enabled: false
+      import-check:
+        enabled: false
+
+    gateway:
+      server:
+        webflux:
+          discovery:
+            locator:
+              enabled: true   # Enables service discovery via Eureka
+
+      routes:
+        - id: userservice
+          uri: lb://USERSERVICE
+          predicates:
+            - Path=/api/users/**
+        - id: activityservice
+          uri: lb://ACTIVITYSERVICE
+          predicates:
+            - Path=/api/activities/**
+        - id: aiservice
+          uri: lb://AISERVICE
+          predicates:
+            - Path=/api/recommendations/**
+
+server:
+  port: 8080
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true
+    ip-address: 127.0.0.1

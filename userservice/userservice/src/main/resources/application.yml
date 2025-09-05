@@ -12,6 +12,12 @@ spring:
       ddl-auto: update
     database-platform: org.hibernate.dialect.PostgreSQLDialect
 
+  cloud:
+    config:
+      enabled: false
+      import-check:
+        enabled: false
+
 eureka:
   client:
     serviceUrl:

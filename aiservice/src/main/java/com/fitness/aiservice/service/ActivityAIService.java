@@ -8,7 +8,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -57,14 +59,40 @@ public class ActivityAIService {
             addAnalysisSection(fullAnalysis, analysisNode, "heartRate", "Heart Rate:");
             addAnalysisSection(fullAnalysis, analysisNode, "caloriesBurned", "Calories Burned:");
 
-             List<String> improvemwents = extractImprovements(analysisJson.path("improvements"));
+            List<String> improvemwents = extractImprovements(analysisJson.path("improvements"));
             List<String> suggestions  = extractSuggestions(analysisJson.path("suggestions"));
             List<String> safety  = extractSafetyGuidelines(analysisJson.path("safety"));
-          } catch (Exception e) {
+            return Recommendation.builder()
+                    .activityId(activity.getId())
+                    .userId(activity.getUserId())
+                    .type(activity.getType().toString())
+                    .recommendation(fullAnalysis.toString().trim())
+                    .improvements(improvemwents)
+                    .suggestions(suggestions)
+                    .safety(safety)
+                    .createdAt(LocalDateTime.now())
+                    .build();
+        } catch (Exception e){
             log.error("Error processing AI response", e);
-          }
+            return createDefaultRecommendation(activity);
+           }
 
-        return null;
+    }
+
+    private Recommendation createDefaultRecommendation(Activity activity) {
+        return Recommendation.builder()
+                .activityId(activity.getId())
+                .userId(activity.getUserId())
+                .type(activity.getType().toString())
+                .recommendation("Server is busy, try after some time.")
+                .improvements(Collections.singletonList("Continue with your current routine."))
+                .suggestions(Collections.singletonList("Try consulting with a fitness coach."))
+                .safety(Arrays.asList(
+                        "Try consulting with a fitness coach.",
+                        "Do not do any reckless activity."
+                ))
+                .createdAt(LocalDateTime.now())
+                .build();
     }
 
     private List<String> extractSafetyGuidelines(JsonNode safetyNode) {
@@ -103,7 +131,7 @@ public class ActivityAIService {
     }
 
     private void addAnalysisSection(StringBuilder fullAnalysis, JsonNode analysisNode, String key, String prefix) {
-        if(analysisNode.path(key).isMissingNode()){
+        if(!analysisNode.path(key).isMissingNode()){
             fullAnalysis.append(prefix)
                     .append(analysisNode.path(key).asText())
                     .append("\n\n");

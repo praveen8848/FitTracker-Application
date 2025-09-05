@@ -18,13 +18,16 @@ spring:
         spring.json.value.default.type: com.fitness.aiservice.model.Activity
         spring.json.trusted.packages: "*"
 
+  cloud:
+    config:
+      enabled: false
+      import-check:
+        enabled: false
 
 gemini:
   api:
     url: ${GEMINI_URL}
     key: ${GEMINI_KEY}
-
-
 
 kafka:
   topic:
@@ -34,7 +37,9 @@ eureka:
   client:
     serviceUrl:
       defaultZone: http://localhost:8761/eureka/
-
+  instance:
+    prefer-ip-address: true
+    ip-address: 127.0.0.1
 
 server:
   port: 8083
