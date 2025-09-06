@@ -32,17 +32,16 @@ public class UserService {
         User user = new User();
         user.setEmail(request.getEmail());
         user.setFirstName(request.getFirstName());
-        user.setLastName(request.getLastName());
         user.setKeycloakId(request.getKeycloakId());
-        user.setFirstName(request.getFirstName());
+        user.setLastName(request.getLastName());
         user.setPassword(request.getPassword());
 
         User savedUser = repository.save(user);
         UserResponse userResponse = new UserResponse();
         userResponse.setId(savedUser.getId());
         userResponse.setPassword(savedUser.getPassword());
-        userResponse.setEmail(savedUser.getEmail());
         userResponse.setKeycloakId(savedUser.getKeycloakId());
+        userResponse.setEmail(savedUser.getEmail());
         userResponse.setFirstName(savedUser.getFirstName());
         userResponse.setLastName(savedUser.getLastName());
         userResponse.setCreatedAt(savedUser.getCreatedAt());
