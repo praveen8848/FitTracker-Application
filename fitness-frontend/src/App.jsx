@@ -1,5 +1,3 @@
-
-//import './App.css'
 import { Box, Button } from "@mui/material"
 import { useContext, useEffect, useState } from "react"
 import { AuthContext } from "react-oauth2-code-pkce"
@@ -8,14 +6,14 @@ import { BrowserRouter as Router, Navigate, Route, Routes, useLocation  } from "
 import { logout, setCredentials } from "./store/authSlice";
 import ActivityForm from "./components/ActivityForm";
 import ActivityDetail from "./components/ActivityDetail";
-import ActivityList from "./components/ActivityList";
+import { ActivityList } from "./components/ActivityList.jsx";
 
 
 
 const ActivitiesPage = () => {
   return (
     <Box  sx={{ p: 2, border: '1px dashed grey' }}>
-       <ActivityForm />
+       <ActivityForm onActivityAdded = {() => window.location.reload()}/>
        <ActivityList />
     </Box>
   );
