@@ -1,63 +1,71 @@
-import { Box, Button } from "@mui/material"
-import { useContext, useEffect, useState } from "react"
-import { AuthContext } from "react-oauth2-code-pkce"
-import { useDispatch } from "react-redux";
-import { BrowserRouter as Router, Navigate, Route, Routes, useLocation  } from "react-router"
-import { logout, setCredentials } from "./store/authSlice";
-import ActivityForm from "./components/ActivityForm";
+// src/App.jsx
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { useEffect } from "react";
+
+// Import components
+import Navbar from "./components/Navbar";
+import ProtectedRoute from "./components/ProtectedRoute";
 import ActivityDetail from "./components/ActivityDetail";
-import { ActivityList } from "./components/ActivityList.jsx";
+import ActivityList from "./components/ActivityList";
 
+// Import pages
+import HomePage from "./pages/HomePage"; // ✅ Import the new HomePage
+import LoginPage from "./pages/LoginPage";
+import DashboardPage from "./pages/DashboardPage";
 
+// Import auth actions
+import { initializeAuth } from "./store/authSlice";
 
-const ActivitiesPage = () => {
+// This layout component will help us conditionally show the Navbar
+const AppLayout = () => {
+  const location = useLocation();
+  // ✅ The global Navbar will be hidden only on the homepage ('/')
+  const showNavbar = location.pathname !== '/';
+
   return (
-    <Box  sx={{ p: 2, border: '1px dashed grey' }}>
-       <ActivityForm onActivityAdded = {() => window.location.reload()}/>
-       <ActivityList />
-    </Box>
+    <div className="App">
+      {showNavbar && <Navbar />}
+      {/* The main content area */}
+      <main>
+        <Routes>
+          {/* Public routes */}
+          <Route path="/" element={<HomePage />} />
+          <Route path="/login" element={<LoginPage />} />
+
+          {/* Protected routes */}
+          <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+          <Route path="/activities/:id" element={<ProtectedRoute><ActivityDetail /></ProtectedRoute>} />
+          
+          {/* Redirect any unknown routes to home */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </main>
+    </div>
   );
-}
+};
 
 function App() {
-
- const {token, tokenData, logIn, logOut, isAuthenticated}
-  = useContext(AuthContext);
+  const { loading } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
-  const[authReady, setAuthReady] = useState(false);
 
- useEffect( () => {
-  if(token){
-    dispatch(setCredentials({token, user: tokenData}));
-    setAuthReady(true);
+  useEffect(() => {
+    dispatch(initializeAuth());
+  }, [dispatch]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <div className="text-lg">Loading...</div>
+      </div>
+    );
   }
- }, [token, tokenData, dispatch]);
 
   return (
     <Router>
-      {!token ? (
-      <Button variant="contained"
-      onClick={() => {logIn();}}>
-         LOGIN
-      </Button>
-      ) : (
-        <div>
-          <Box component="section" sx={{ p: 2, border: '1px dashed grey' }}>
-              <Button variant="contained" onClick={logout}>
-                LOGOUT
-              </Button>
-              <Routes>
-                <Route path = "/activities" element = {<ActivitiesPage />}/>
-                <Route path = "/activities/:id" element = {<ActivityDetail />}/>
-                <Route path = "/" element = {token ? <Navigate to = "/activities" replace/> : 
-                                <div>Welocome! Please login</div>}/>
-              </Routes>
-          </Box>
-          
-        </div>
-      )}
+      <AppLayout />
     </Router>
-  )
+  );
 }
 
-export default App
+export default App;
