@@ -1,7 +1,7 @@
-# 🚀 FitTracker – AI-Powered Fitness Analytics Platform
+# 🚀 FitTracker :- AI-Powered Fitness Analytics Platform
 
 [![Java](https://img.shields.io/badge/Java-21-blue?logo=java)](https://www.java.com/) 
-[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.3.0-brightgreen?logo=springboot)](https://spring.io/projects/spring-boot) 
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.5-brightgreen?logo=springboot)](https://spring.io/projects/spring-boot) 
 [![React](https://img.shields.io/badge/React-19-blue?logo=react)](https://reactjs.org/) 
 [![Kafka](https://img.shields.io/badge/Apache%20Kafka-2.9-yellow?logo=apachekafka)](https://kafka.apache.org/) 
 [![Docker](https://img.shields.io/badge/Docker-24-blue?logo=docker)](https://www.docker.com/) 
@@ -23,27 +23,31 @@ This project demonstrates modern software architecture with microservices, event
 
 ---
 
-## 🏗️ Architecture Overview
-┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
-│   React Frontend│    │  API Gateway     │    │  Eureka Server  │
-│   (Vite + MUI)  │◄──►│  (Spring Cloud)  │◄──►│  (Service Disc) │
-└─────────────────┘    └──────────────────┘    └─────────────────┘
-                              │
-                              ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                      Microservices Ecosystem                    │
-│  ┌─────────────┐    ┌─────────────┐    ┌─────────────────────┐  │
-│  │ Activity    │    │ User        │    │ AI Service          │  │
-│  │ Service     │◄──►│ Service     │◄──►│ (Gemini Pro API)    │  │
-│  └─────────────┘    └─────────────┘    └─────────────────────┘  │
-│          │               │               │                      │
-│          └───────┬───────┴───────────────┘                      │
-│                  ▼                                              │
-│          ┌───────────────┐                                      │
-│          │ Apache Kafka  │                                      │
-│          │ (Event Bus)   │                                      │
-│          └───────────────┘                                      │
-└─────────────────────────────────────────────────────────────────┘
+## 🏗️  Architecture Overview
+
+```text
+ ┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
+ │   React Frontend│    │   API Gateway    │    │  Eureka Server  │
+ │   (Vite + MUI)  │◄──►│ (Spring Cloud)   │◄──►│ (Service Disc.) │
+ └─────────────────┘    └──────────────────┘    └─────────────────┘
+                               │
+                               ▼
+ ┌─────────────────────────────────────────────────────────────────┐
+ │                      Microservices Ecosystem                    │
+ │                                                                 │
+ │  ┌─────────────┐    ┌─────────────┐    ┌─────────────────────┐  │
+ │  │ Activity    │    │ User        │    │ AI Service          │  │
+ │  │ Service     │◄──►│ Service     │◄──►│ (Gemini Pro API)    │  │
+ │  └─────────────┘    └─────────────┘    └─────────────────────┘  │
+ │          │               │               │                      │
+ │          └───────┬───────┴───────────────┘                      │
+ │                  ▼                                              │
+ │          ┌───────────────┐                                      │
+ │          │ Apache Kafka  │                                      │
+ │          │  (Event Bus)  │                                      │
+ │          └───────────────┘                                      │
+ └─────────────────────────────────────────────────────────────────┘
+```
 
 FitTracker follows a **Microservices Architecture**:
 
@@ -118,89 +122,33 @@ FitTracker follows a **Microservices Architecture**:
 ---
 
 ## 📂 Project Structure
+
+```text
 FitTracker/
 ├── 📁 Microservices (Spring Boot)
-│   ├── activityservice/          # Activity management service
-│   │   ├── src/main/java/com/fitness/activityservice/
-│   │   │   ├── ActivityserviceApplication.java
-│   │   │   ├── config/           # Mongo and WebClient configuration
-│   │   │   ├── controller/       # ActivityController
-│   │   │   ├── dto/              # ActivityRequest, ActivityResponse
-│   │   │   ├── model/            # Activity, ActivityType entities
-│   │   │   └── service/          # Business logic and repository
-│   │   └── application.yml
-│   │
-│   ├── aiservice/                # AI recommendation service
-│   │   ├── src/main/java/com/fitness/aiservice/
-│   │   │   ├── AiserviceApplication.java
-│   │   │   ├── config/           # Mongo configuration
-│   │   │   ├── controller/       # RecommendationController
-│   │   │   ├── model/            # Activity, Recommendation entities
-│   │   │   ├── repository/       # Data access layer
-│   │   │   └── service/          # Gemini AI integration & Kafka listener
-│   │   └── application.yml
-│   │
-│   ├── configservice/            # Central configuration service
-│   │   ├── src/main/java/com/fitness/configservice/
-│   │   │   └── ConfigserviceApplication.java
-│   │   └── resources/config/     # Service-specific configurations
-│   │
-│   ├── eureka/                   # Service discovery server
-│   │   ├── src/main/java/com/fitness/eureka/
-│   │   │   └── EurekaApplication.java
-│   │   └── application.yml
-│   │
-│   ├── gateway/                  # API Gateway with security
-│   │   ├── src/main/java/com/fitness/gateway/
-│   │   │   ├── GatewayApplication.java
-│   │   │   ├── KeycloakUserSyncFilter.java
-│   │   │   ├── SecurityConfig.java
-│   │   │   └── user/             # User management components
-│   │   └── application.yml
-│   │
-│   └── userservice/              # User management service
-│       ├── src/main/java/com/fitness/userservice/
-│       │   ├── UserRepository.java
-│       │   ├── UserserviceApplication.java
-│       │   ├── controller/       # UserController
-│       │   ├── dto/              # Data transfer objects
-│       │   ├── models/           # User entities
-│       │   └── services/         # Business logic
-│       └── application.yml
+│   ├── activityservice/       # Activity management service
+│   ├── aiservice/             # AI recommendation service (Gemini + Kafka)
+│   ├── configservice/         # Centralized configuration service
+│   ├── eureka/                # Service discovery (Eureka Server)
+│   ├── gateway/               # API Gateway (Spring Cloud + Keycloak Security)
+│   └── userservice/           # User management service
 │
 ├── 📁 Frontend (React + Vite)
 │   └── fitness-frontend/
-│       ├── src/
-│       │   ├── components/       # Reusable UI components
-│       │   │   ├── ActivityCard.jsx
-│       │   │   ├── ActivityDetail.jsx
-│       │   │   ├── ActivityForm.jsx
-│       │   │   ├── ActivityList.jsx
-│       │   │   ├── Navbar.jsx
-│       │   │   └── ProtectedRoute.jsx
-│       │   ├── pages/            # Application pages
-│       │   │   ├── DashboardPage.jsx
-│       │   │   ├── Homepage.jsx
-│       │   │   └── LoginPage.jsx
-│       │   ├── services/         # API communication
-│       │   │   └── api.js
-│       │   └── store/            # Redux state management
-│       │       ├── authSlice.js
-│       │       └── store.js
-│       ├── package.json
-│       └── vite.config.js
+│       ├── components/        # Reusable UI components
+│       ├── pages/             # Application pages
+│       ├── services/          # API communication layer
+│       └── store/             # Redux state management
 │
-├── 📄 Configuration Files
-│   ├── docker-compose.yml        # Container orchestration
-│   ├── pom.xml                   # Maven build configuration
-│   └── application.yml files     # Service-specific configurations
+├── 📄 Configuration
+│   ├── docker-compose.yml     # Container orchestration
+│   ├── pom.xml                # Maven build configuration
+│   └── application.yml        # Service-specific configurations
 │
 └── 📄 Documentation
-    ├── README.md                 # Project overview
-    └── API_DOCS.md              # API documentation
-
-
-
+    ├── README.md              # Project overview
+    └── API_DOCS.md            # API documentation
+```
 ---
 
 ## 🎯 Learning Outcomes
@@ -219,12 +167,6 @@ FitTracker/
 - Extend AI service to support dietary & workout recommendations  
 
 ---
-
-## 👨‍💻 Author
-**Praveen Verma**  
-Aspiring Software Developer | Tech Enthusiast | Microsoft Learn Student Ambassador  
-
-🌐 Passionate about Problem Solving, AI, and Microservices  
 
 ✨ FitTracker is a showcase of building scalable, secure, and AI-powered applications using modern software architecture.
 
