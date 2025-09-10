@@ -1,4 +1,4 @@
-# 🚀 FitTracker – AI-Powered Fitness Tracking Platform
+# 🚀 FitTracker – AI-Powered Fitness Analytics Platform
 
 [![Java](https://img.shields.io/badge/Java-21-blue?logo=java)](https://www.java.com/) 
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.3.0-brightgreen?logo=springboot)](https://spring.io/projects/spring-boot) 
@@ -24,6 +24,26 @@ This project demonstrates modern software architecture with microservices, event
 ---
 
 ## 🏗️ Architecture Overview
+┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
+│   React Frontend│    │  API Gateway     │    │  Eureka Server  │
+│   (Vite + MUI)  │◄──►│  (Spring Cloud)  │◄──►│  (Service Disc) │
+└─────────────────┘    └──────────────────┘    └─────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                      Microservices Ecosystem                    │
+│  ┌─────────────┐    ┌─────────────┐    ┌─────────────────────┐  │
+│  │ Activity    │    │ User        │    │ AI Service          │  │
+│  │ Service     │◄──►│ Service     │◄──►│ (Gemini Pro API)    │  │
+│  └─────────────┘    └─────────────┘    └─────────────────────┘  │
+│          │               │               │                      │
+│          └───────┬───────┴───────────────┘                      │
+│                  ▼                                              │
+│          ┌───────────────┐                                      │
+│          │ Apache Kafka  │                                      │
+│          │ (Event Bus)   │                                      │
+│          └───────────────┘                                      │
+└─────────────────────────────────────────────────────────────────┘
 
 FitTracker follows a **Microservices Architecture**:
 
@@ -98,248 +118,87 @@ FitTracker follows a **Microservices Architecture**:
 ---
 
 ## 📂 Project Structure
+FitTracker/
+├── 📁 Microservices (Spring Boot)
+│   ├── activityservice/          # Activity management service
+│   │   ├── src/main/java/com/fitness/activityservice/
+│   │   │   ├── ActivityserviceApplication.java
+│   │   │   ├── config/           # Mongo and WebClient configuration
+│   │   │   ├── controller/       # ActivityController
+│   │   │   ├── dto/              # ActivityRequest, ActivityResponse
+│   │   │   ├── model/            # Activity, ActivityType entities
+│   │   │   └── service/          # Business logic and repository
+│   │   └── application.yml
+│   │
+│   ├── aiservice/                # AI recommendation service
+│   │   ├── src/main/java/com/fitness/aiservice/
+│   │   │   ├── AiserviceApplication.java
+│   │   │   ├── config/           # Mongo configuration
+│   │   │   ├── controller/       # RecommendationController
+│   │   │   ├── model/            # Activity, Recommendation entities
+│   │   │   ├── repository/       # Data access layer
+│   │   │   └── service/          # Gemini AI integration & Kafka listener
+│   │   └── application.yml
+│   │
+│   ├── configservice/            # Central configuration service
+│   │   ├── src/main/java/com/fitness/configservice/
+│   │   │   └── ConfigserviceApplication.java
+│   │   └── resources/config/     # Service-specific configurations
+│   │
+│   ├── eureka/                   # Service discovery server
+│   │   ├── src/main/java/com/fitness/eureka/
+│   │   │   └── EurekaApplication.java
+│   │   └── application.yml
+│   │
+│   ├── gateway/                  # API Gateway with security
+│   │   ├── src/main/java/com/fitness/gateway/
+│   │   │   ├── GatewayApplication.java
+│   │   │   ├── KeycloakUserSyncFilter.java
+│   │   │   ├── SecurityConfig.java
+│   │   │   └── user/             # User management components
+│   │   └── application.yml
+│   │
+│   └── userservice/              # User management service
+│       ├── src/main/java/com/fitness/userservice/
+│       │   ├── UserRepository.java
+│       │   ├── UserserviceApplication.java
+│       │   ├── controller/       # UserController
+│       │   ├── dto/              # Data transfer objects
+│       │   ├── models/           # User entities
+│       │   └── services/         # Business logic
+│       └── application.yml
+│
+├── 📁 Frontend (React + Vite)
+│   └── fitness-frontend/
+│       ├── src/
+│       │   ├── components/       # Reusable UI components
+│       │   │   ├── ActivityCard.jsx
+│       │   │   ├── ActivityDetail.jsx
+│       │   │   ├── ActivityForm.jsx
+│       │   │   ├── ActivityList.jsx
+│       │   │   ├── Navbar.jsx
+│       │   │   └── ProtectedRoute.jsx
+│       │   ├── pages/            # Application pages
+│       │   │   ├── DashboardPage.jsx
+│       │   │   ├── Homepage.jsx
+│       │   │   └── LoginPage.jsx
+│       │   ├── services/         # API communication
+│       │   │   └── api.js
+│       │   └── store/            # Redux state management
+│       │       ├── authSlice.js
+│       │       └── store.js
+│       ├── package.json
+│       └── vite.config.js
+│
+├── 📄 Configuration Files
+│   ├── docker-compose.yml        # Container orchestration
+│   ├── pom.xml                   # Maven build configuration
+│   └── application.yml files     # Service-specific configurations
+│
+└── 📄 Documentation
+    ├── README.md                 # Project overview
+    └── API_DOCS.md              # API documentation
 
-├── activityservice
-    ├── .gitattributes
-    ├── .gitignore
-    ├── .mvn
-    │   └── wrapper
-    │   │   └── maven-wrapper.properties
-    ├── mvnw
-    ├── mvnw.cmd
-    ├── pom.xml
-    └── src
-    │   ├── main
-    │       ├── java
-    │       │   └── com
-    │       │   │   └── fitness
-    │       │   │       └── activityservice
-    │       │   │           ├── ActivityserviceApplication.java
-    │       │   │           ├── config
-    │       │   │               ├── MongoConfig.java
-    │       │   │               └── WebClientConfig.java
-    │       │   │           ├── controller
-    │       │   │               └── ActivityController.java
-    │       │   │           ├── dto
-    │       │   │               ├── ActivityRequest.java
-    │       │   │               └── ActivityResponse.java
-    │       │   │           ├── model
-    │       │   │               ├── Activity.java
-    │       │   │               └── ActivityType.java
-    │       │   │           └── service
-    │       │   │               ├── ActivityRepository.java
-    │       │   │               ├── ActivityService.java
-    │       │   │               └── UserValidationService.java
-    │       └── resources
-    │       │   └── application.yml
-    │   └── test
-    │       └── java
-    │           └── com
-    │               └── fitness
-    │                   └── activityservice
-    │                       └── ActivityserviceApplicationTests.java
-├── aiservice
-    ├── .gitattributes
-    ├── .gitignore
-    ├── .mvn
-    │   └── wrapper
-    │   │   └── maven-wrapper.properties
-    ├── mvnw
-    ├── mvnw.cmd
-    ├── pom.xml
-    └── src
-    │   ├── main
-    │       ├── java
-    │       │   └── com
-    │       │   │   └── fitness
-    │       │   │       └── aiservice
-    │       │   │           ├── AiserviceApplication.java
-    │       │   │           ├── config
-    │       │   │               └── MongoConfig.java
-    │       │   │           ├── controller
-    │       │   │               └── RecommendationController.java
-    │       │   │           ├── model
-    │       │   │               ├── Activity.java
-    │       │   │               ├── ActivityType.java
-    │       │   │               └── Recommendation.java
-    │       │   │           ├── repository
-    │       │   │               └── RecommendationRepository.java
-    │       │   │           └── service
-    │       │   │               ├── ActivityAIService.java
-    │       │   │               ├── ActivityMessageListner.java
-    │       │   │               ├── GeminiService.java
-    │       │   │               └── RecommendationService.java
-    │       └── resources
-    │       │   └── application.yml
-    │   └── test
-    │       └── java
-    │           └── com
-    │               └── fitness
-    │                   └── aiservice
-    │                       └── AiserviceApplicationTests.java
-├── configservice
-    ├── .gitattributes
-    ├── .gitignore
-    ├── .mvn
-    │   └── wrapper
-    │   │   └── maven-wrapper.properties
-    ├── mvnw
-    ├── mvnw.cmd
-    ├── pom.xml
-    └── src
-    │   ├── main
-    │       ├── java
-    │       │   └── com
-    │       │   │   └── fitness
-    │       │   │       └── configservice
-    │       │   │           └── ConfigserviceApplication.java
-    │       └── resources
-    │       │   ├── application.yml
-    │       │   └── config
-    │       │       ├── activity-service.yml
-    │       │       ├── ai-service.yml
-    │       │       └── user-service.yml
-    │   └── test
-    │       └── java
-    │           └── com
-    │               └── fitness
-    │                   └── configservice
-    │                       └── ConfigserviceApplicationTests.java
-├── eureka
-    ├── .gitattributes
-    ├── .gitignore
-    ├── .mvn
-    │   └── wrapper
-    │   │   └── maven-wrapper.properties
-    ├── mvnw
-    ├── mvnw.cmd
-    ├── pom.xml
-    └── src
-    │   ├── main
-    │       ├── java
-    │       │   └── com
-    │       │   │   └── fitness
-    │       │   │       └── eureka
-    │       │   │           └── EurekaApplication.java
-    │       └── resources
-    │       │   └── application.yml
-    │   └── test
-    │       └── java
-    │           └── com
-    │               └── fitness
-    │                   └── eureka
-    │                       └── EurekaApplicationTests.java
-├── fitness-frontend
-    ├── .env
-    ├── .env.example
-    ├── .gitignore
-    ├── README.md
-    ├── eslint.config.js
-    ├── index.html
-    ├── package-lock.json
-    ├── package.json
-    ├── postcss.config.js
-    ├── public
-    │   └── vite.svg
-    ├── src
-    │   ├── App.css
-    │   ├── App.jsx
-    │   ├── assets
-    │   │   └── react.svg
-    │   ├── authConfig.js
-    │   ├── components
-    │   │   ├── ActivityCard.jsx
-    │   │   ├── ActivityDetail.jsx
-    │   │   ├── ActivityForm.jsx
-    │   │   ├── ActivityList.jsx
-    │   │   ├── Navbar.jsx
-    │   │   └── ProtectedRoute.jsx
-    │   ├── index.css
-    │   ├── main.jsx
-    │   ├── pages
-    │   │   ├── DashboardPage.jsx
-    │   │   ├── Homepage.jsx
-    │   │   └── LoginPage.jsx
-    │   ├── services
-    │   │   └── api.js
-    │   └── store
-    │   │   ├── authSlice.js
-    │   │   └── store.js
-    ├── tailwind.config.js
-    └── vite.config.js
-├── gateway
-    ├── .gitattributes
-    ├── .gitignore
-    ├── .mvn
-    │   └── wrapper
-    │   │   └── maven-wrapper.properties
-    ├── mvnw
-    ├── mvnw.cmd
-    ├── pom.xml
-    └── src
-    │   ├── main
-    │       ├── java
-    │       │   └── com
-    │       │   │   └── fitness
-    │       │   │       └── gateway
-    │       │   │           ├── GatewayApplication.java
-    │       │   │           ├── KeycloakUserSyncFilter.java
-    │       │   │           ├── SecurityConfig.java
-    │       │   │           └── user
-    │       │   │               ├── RegisterRequest.java
-    │       │   │               ├── UserResponse.java
-    │       │   │               ├── UserService.java
-    │       │   │               └── WebClientConfig.java
-    │       └── resources
-    │       │   └── application.yml
-    │   └── test
-    │       └── java
-    │           └── com
-    │               └── fitness
-    │                   └── gateway
-    │                       └── GatewayApplicationTests.java
-└── userservice
-    ├── .idea
-        ├── material_theme_project_new.xml
-        ├── misc.xml
-        ├── modules.xml
-        ├── userservice.iml
-        └── workspace.xml
-    └── userservice
-        ├── .gitattributes
-        ├── .gitignore
-        ├── .mvn
-            └── wrapper
-            │   └── maven-wrapper.properties
-        ├── mvnw
-        ├── mvnw.cmd
-        ├── pom.xml
-        └── src
-            ├── main
-                ├── java
-                │   └── com
-                │   │   └── fitness
-                │   │       └── userservice
-                │   │           ├── UserRepository.java
-                │   │           ├── UserserviceApplication.java
-                │   │           ├── controller
-                │   │               └── UserController.java
-                │   │           ├── dto
-                │   │               ├── RegisterRequest.java
-                │   │               └── UserResponse.java
-                │   │           ├── models
-                │   │               ├── User.java
-                │   │               └── UserRole.java
-                │   │           └── services
-                │   │               └── UserService.java
-                └── resources
-                │   └── application.yml
-            └── test
-                └── java
-                    └── com
-                        └── fitness
-                            └── userservice
-                                └── UserserviceApplicationTests.java
 
 
 ---
